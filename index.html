@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Александр Жилинский — Разработчик 1С</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Manrope:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0c0c0f;
+      --surface: #13131a;
+      --surface2: #1a1a24;
+      --border: rgba(255, 255, 255, 0.07);
+      --accent: #c8ff00;
+      --accent2: #00d4ff;
+      --text: #e8e8f0;
+      --muted: #7a7a9a;
+      --tag-bg: rgba(200, 255, 0, 0.07);
+      --tag-border: rgba(200, 255, 0, 0.2);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── Grid lines background ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 60px;
+      background: rgba(12, 12, 15, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 120px 60px 80px;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(200, 255, 0, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-glow2 {
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(200, 255, 0, 0.3);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 36px;
+      width: fit-content;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(0.8);
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(48px, 7vw, 96px);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 .accent-line {
+      color: var(--accent);
+      display: block;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 48px;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    .hero-contacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .contact-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .contact-chip:hover {
+      border-color: rgba(200, 255, 0, 0.3);
+      background: var(--surface2);
+    }
+
+    .contact-chip .icon {
+      font-size: 16px;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      right: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 48px;
+      height: 1px;
+      background: var(--muted);
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 100px 60px;
+    }
+
+    section+section {
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 60px;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .about-text {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .about-text p {
+      margin-bottom: 20px;
+    }
+
+    .about-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px 24px;
+    }
+
+    .stat-card:nth-child(1) {
+      border-radius: 12px 0 0 0;
+    }
+
+    .stat-card:nth-child(2) {
+      border-radius: 0 12px 0 0;
+    }
+
+    .stat-card:nth-child(3) {
+      border-radius: 0 0 0 12px;
+    }
+
+    .stat-card:nth-child(4) {
+      border-radius: 0 0 12px 0;
+    }
+
+    .stat-number {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* ── COMPETENCIES ── */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .comp-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .comp-card::after {
+      content: '↗';
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 14px;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .comp-card:hover {
+      border-color: rgba(200, 255, 0, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .comp-card:hover::after {
+      opacity: 0.5;
+      transform: translate(2px, -2px);
+    }
+
+    .comp-card .comp-icon {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .comp-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── COMPETENCY MODAL ── */
+    .comp-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 201;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .comp-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .comp-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 40px;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .comp-modal-overlay.active .comp-modal {
+      transform: translateY(0);
+    }
+
+    .comp-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s, border-color 0.2s;
+      line-height: 1;
+    }
+
+    .comp-modal-close:hover {
+      color: var(--text);
+      border-color: rgba(200, 255, 0, 0.3);
+    }
+
+    .comp-modal-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+
+    .comp-modal-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .comp-modal-detail {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .comp-modal-detail ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .comp-modal-detail ul li {
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .comp-modal-detail ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    .comp-modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── TECH ── */
+    .tech-categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .tech-category {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .tech-category h3 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--tag-bg);
+      border: 1px solid var(--tag-border);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    /* ── EXPERIENCE ── */
+    .timeline {
+      position: relative;
+      max-width: 860px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .exp-item {
+      padding-left: 40px;
+      padding-bottom: 60px;
+      position: relative;
+    }
+
+    .exp-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .exp-dot {
+      position: absolute;
+      left: -5px;
+      top: 6px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+
+    .exp-current .exp-dot {
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200, 255, 0, 0.15);
+      animation: ring-pulse 2s infinite;
+    }
+
+    @keyframes ring-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 3px rgba(200, 255, 0, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 0 6px rgba(200, 255, 0, 0.05);
+      }
+    }
+
+    .exp-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .exp-company {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .exp-period {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+    }
+
+    .exp-role {
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .exp-location {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .exp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .exp-list li {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .exp-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .project-card:hover {
+      border-color: rgba(200, 255, 0, 0.25);
+      transform: translateY(-3px);
+    }
+
+    .project-num {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+      opacity: 0.6;
+    }
+
+    .project-name {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .project-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── EDUCATION ── */
+    .edu-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 780px;
+      margin-bottom: 24px;
+    }
+
+    .edu-degree {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .edu-uni {
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .edu-period {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .edu-disciplines {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .cert-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid rgba(200, 255, 0, 0.25);
+      border-radius: 10px;
+      padding: 20px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .cert-card::before {
+      content: '🏆';
+      font-size: 20px;
+    }
+
+    /* ── ADDITIONAL ── */
+    .additional-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .add-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px;
+    }
+
+    .add-card h3 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .add-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 48px 60px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-name {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── PROJECT MODAL ── */
+    .project-card {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .project-card::after {
+      content: '↗';
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 14px;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .project-card:hover::after {
+      opacity: 0.5;
+      transform: translate(2px, -2px);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 40px;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s, border-color 0.2s;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+      border-color: rgba(200, 255, 0, 0.3);
+    }
+
+    .modal-project-num {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    .modal-project-name {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .modal-section {
+      margin-bottom: 24px;
+    }
+
+    .modal-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-section h4 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .modal-section p,
+    .modal-section li {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .modal-section ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .modal-section ul li {
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .modal-section ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    .modal-section ul ul {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .modal-section ul ul li {
+      padding-left: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .modal-section ul ul li::before {
+      content: '•';
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav {
+        padding: 16px 24px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      section {
+        padding: 72px 24px;
+      }
+
+      .hero {
+        padding: 100px 24px 60px;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .about-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+
+      footer {
+        padding: 32px 24px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-scroll {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .section-title {
+        margin-bottom: 40px;
+      }
+
+      .about-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stat-card {
+        padding: 20px 16px;
+      }
+
+      .stat-number {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">AZ</a>
+    <ul class="nav-links">
+      <li><a href="#about">О себе</a></li>
+      <li><a href="#skills">Компетенции</a></li>
+      <li><a href="#experience">Опыт</a></li>
+      <li><a href="#projects">Проекты</a></li>
+      <li><a href="#education">Образование</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+
+    <div class="hero-badge">
+      <span>Доступен к новым проектам</span>
+    </div>
+
+    <h1>
+      Александр<br>
+      <span class="accent-line">Жилинский</span>
+    </h1>
+
+    <p class="hero-sub">
+      Разработчик 1С · Middle · Автоматизация бизнес-процессов,<br>
+      интеграции, оптимизация — с фокусом на результат и прямую коммуникацию с бизнесом.
+    </p>
+
+    <div class="hero-contacts">
+      <a class="contact-chip" href="tel:+79271512245">
+        <span class="icon">📞</span>
+        +7 927 151-22-45
+      </a>
+      <a class="contact-chip" href="mailto:Azhilinsk@yandex.com">
+        <span class="icon">✉️</span>
+        Azhilinsk@yandex.com
+      </a>
+      <div class="contact-chip">
+        <span class="icon">📍</span>
+        Пенза / Москва / Санкт-Петербург
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      Листать вниз
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label">01 — О себе</div>
+    <h2 class="section-title">Кратко о главном</h2>
+
+    <div class="about-grid">
+      <div class="about-text fade-in">
+        <p>Разработчик 1С уровня Middle с опытом доработки типовых и нетиповых конфигураций, построения интеграций через
+          HTTP-сервисы и реализации обменов данными между системами. Специализируюсь на автоматизации бизнес-процессов в
+          контуре 1С, оптимизации высоконагруженных участков кода и обеспечении стабильности интеграционных решений.
+          Имею опыт наставничества junior-разработчиков, самостоятельной оценки трудоёмкости задач и взаимодействия с
+          бизнес-заказчиком напрямую, без участия аналитика.</p>
+      </div>
+      <div class="about-stats fade-in">
+        <div class="stat-card">
+          <div class="stat-number">2+</div>
+          <div class="stat-label">года коммерческой разработки</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2+</div>
+          <div class="stat-label">конфигураций в работе</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2</div>
+          <div class="stat-label">компании-работодателя</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">5</div>
+          <div class="stat-label">ключевых проектов</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPETENCIES -->
+  <section id="skills">
+    <div class="section-label">02 — Компетенции</div>
+    <h2 class="section-title">Ключевые компетенции</h2>
+
+    <div class="comp-grid">
+      <div class="comp-card fade-in">
+        <div class="comp-icon">⚙️</div>
+        <p>Доработка типовых конфигураций (УТ 11.5, КА 2, УНФ, Альфа-Авто 6, ITILIUM)</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">🌐</div>
+        <p>Проектирование и разработка HTTP-сервисов</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">🔗</div>
+        <p>Построение обменов данными: COM-соединения, правила обмена XML</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">🔀</div>
+        <p>Интеграция 1С с внешними системами и сайтами (Bitrix24, интернет-магазины)</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">⚡</div>
+        <p>Оптимизация запросов и производительности серверного кода</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">📐</div>
+        <p>Разработка бизнес-процессов, моделирование BPMN и ER-диаграмм</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">🖥️</div>
+        <p>Работа с управляемыми формами и клиент-серверной архитектурой</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">🔄</div>
+        <p>Миграция функционала с обычных форм на управляемые</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">📚</div>
+        <p>Применение БСП и соблюдение стандартов разработки 1С</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">👥</div>
+        <p>Наставничество, code review, оценка трудоёмкости задач</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">🔍</div>
+        <p>Анализ причин роста объёмов базы, устранение узких мест</p>
+      </div>
+      <div class="comp-card fade-in">
+        <div class="comp-icon">💬</div>
+        <p>Работа без аналитика: формализация требований от бизнеса напрямую</p>
+      </div>
+    </div>
+
+    <!-- Technologies -->
+    <div style="margin-top: 64px;">
+      <h3
+        style="font-family:'Unbounded',sans-serif; font-size:20px; font-weight:600; margin-bottom:32px; letter-spacing:-0.01em;">
+        Технологии и инструменты</h3>
+      <div class="tech-categories">
+        <div class="tech-category fade-in">
+          <h3>Платформа 1С</h3>
+          <div class="tag-list">
+            <span class="tag">1С:Предприятие 8.3</span>
+            <span class="tag">Управляемые формы</span>
+            <span class="tag">СКД</span>
+            <span class="tag">БСП</span>
+            <span class="tag">HTTP-сервисы</span>
+            <span class="tag">Конвертация данных 2/3</span>
+            <span class="tag">Бизнес-процессы</span>
+            <span class="tag">RLS</span>
+            <span class="tag">1С:EDT</span>
+          </div>
+        </div>
+        <div class="tech-category fade-in">
+          <h3>Конфигурации</h3>
+          <div class="tag-list">
+            <span class="tag">УТ 11.5</span>
+            <span class="tag">Альфа-Авто 6</span>
+            <span class="tag">КА 2</span>
+            <span class="tag">УНФ</span>
+            <span class="tag">ITILIUM</span>
+          </div>
+        </div>
+        <div class="tech-category fade-in">
+          <h3>Базы данных и инфраструктура</h3>
+          <div class="tag-list">
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">SQL</span>
+            <span class="tag">Docker</span>
+            <span class="tag">SonarQube</span>
+            <span class="tag">Vanessa Automation</span>
+          </div>
+        </div>
+        <div class="tech-category fade-in">
+          <h3>Дополнительно</h3>
+          <div class="tag-list">
+            <span class="tag">HTML / CSS / JavaScript</span>
+            <span class="tag">Python</span>
+            <span class="tag">REST API</span>
+            <span class="tag">BPMN 2.0</span>
+            <span class="tag">ER-диаграммы</span>
+            <span class="tag">Git</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-label">03 — Опыт работы</div>
+    <h2 class="section-title">Где работал<br>и что делал</h2>
+
+    <div class="timeline">
+
+      <div class="exp-item exp-current fade-in">
+        <div class="exp-dot"></div>
+        <div class="exp-meta">
+          <span class="exp-company">WiseAdvice-IT / ООО «Люминорика»</span>
+          <span class="exp-period">Ноябрь 2025 — настоящее время</span>
+        </div>
+        <div class="exp-role">Программист 1С</div>
+        <div class="exp-location">Москва / Санкт-Петербург</div>
+        <ul class="exp-list">
+          <li>Сопровождал корпоративные системы: бизнес-процессы, печатные формы, шаблоны сообщений; адаптировал типовой
+            и нетиповой функционал под требования бизнеса; устранял ошибки после обновлений конфигураций.</li>
+          <li>Адаптировал модуль DataMobile: логика мобильного взаимодействия и синхронизации данных под нужды клиента.
+          </li>
+          <li>Настроил обмен данными между базами 1С: COM-соединение, КД2. Обеспечил целлостность и корректность
+            передачи данных.</li>
+          <li>Обслуживал базы данных: диагностировал узкие места, снижал темпы роста БД; создавал сервисные обработки
+            для очистки таблиц, регистров и полей объектов.</li>
+          <li>Спроектировал и реализовал модуль «Менеджер паролей» с интеграцией с браузерным расширением через
+            HTTP-сервисы 1С — решение позволило централизованно управлять учётными данными пользователей.</li>
+          <li>Разработал обработку автоматизации процесса инвентаризации, сократив долю ручных операций и повысив
+            скорость проведения инвентаризаций.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item fade-in">
+        <div class="exp-dot"></div>
+        <div class="exp-meta">
+          <span class="exp-company">ООО «Сигма»</span>
+          <span class="exp-period">Ноябрь 2024 — Октябрь 2025</span>
+        </div>
+        <div class="exp-role">Программист 1С</div>
+        <div class="exp-location">Пенза</div>
+        <ul class="exp-list">
+          <li>Выполнил перенос функционала с обычных форм на управляемые в рамках миграции с Альфа-Авто 4 на Альфа-Авто
+            6 — обеспечил сохранение всей бизнес-логики при переходе на новую платформу.</li>
+          <li>Разрабатывал решения и адаптировал их под конкретные требования заказчиков, внедрял новый функционал в
+            эксплуатируемую систему.</li>
+          <li>Дорабатывал типовой функционал системы, проводил поиск и исправление ошибок на всех этапах проекта.</li>
+          <li>Осуществлял наставничество и обучение junior-сотрудников, обеспечил рост команды от нулевого опыта до
+            самостоятельной разработки; выполнял оценку трудоёмкости задач и проектов.</li>
+          <li>Занимался оптимизацией имеющихся решений, повышая производительность и стабильность работы системы.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-label">04 — Проекты</div>
+    <h2 class="section-title">Ключевые проекты<br>и задачи</h2>
+
+    <div class="projects-grid">
+      <div class="project-card fade-in">
+        <div class="project-num">01</div>
+        <div class="project-name">Модуль «Менеджер паролей» с браузерной интеграцией</div>
+        <p class="project-desc">Разработал модуль в 1С, взаимодействующий с браузерным расширением через HTTP-сервисы.
+          Реализовал централизованное хранение, шифрование и управление учётными данными пользователей. Интеграция
+          позволила пользователям, которые не используют 1С, использовать все назначенные ему пароли в веб-интерфейсе.
+        </p>
+      </div>
+      <div class="project-card fade-in">
+        <div class="project-num">02</div>
+        <div class="project-name">Автоматизация процесса инвентаризации</div>
+        <p class="project-desc">Разработал обработку, автоматизирующую полный цикл инвентаризации: формирование
+          документа о проведении инвентаризации, сверка фактических остатков с учётными, фиксация расхождений. Сократил
+          долю ручного труда и время на проведение типовой инвентаризации.</p>
+      </div>
+      <div class="project-card fade-in">
+        <div class="project-num">03</div>
+        <div class="project-name">Обмен данными между базами 1С</div>
+        <p class="project-desc">Реализовал и сопровождал механизм обмена данными между базами 1С на основе
+          COM-соединения, КД2. Обеспечил синхронизацию справочников, документов, обработку конфликтов и контроль
+          целостности данных.</p>
+      </div>
+      <div class="project-card fade-in">
+        <div class="project-num">04</div>
+        <div class="project-name">Миграция Альфа-Авто 4 → Альфа-Авто 6</div>
+        <p class="project-desc">Перенёс функционал с обычных форм на управляемые в рамках перехода на новую редакцию
+          конфигурации. Адаптировал бизнес-логику, перестроил интерфейсы и обеспечил корректную работу подсистем после
+          миграции.</p>
+      </div>
+      <div class="project-card fade-in">
+        <div class="project-num">05</div>
+        <div class="project-name">Доработка помощника обеспечения потребностей</div>
+        <p class="project-desc">Доработал типовой помощник обеспечения потребностей: внедрил группировку списка с
+          сохранением штатного функционала, расширил набор фильтров и рабочих полей. Реализовал раздельный доступ к
+          данным — при одновременной работе нескольких пользователей каждый видит только строки без ответственного либо
+          закреплённые за ним. Обеспечил корректную работу типовых механизмов с учётом изменённой структуры данных.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECT MODAL -->
+  <div class="modal-overlay" id="projectModal">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div class="modal-project-num" id="modalNum"></div>
+      <div class="modal-project-name" id="modalTitle"></div>
+      <div class="modal-section" id="modalDesc"></div>
+      <div class="modal-section" id="modalExtra"></div>
+      <div class="modal-section" id="modalTags"></div>
+    </div>
+  </div>
+
+  <!-- COMPETENCY MODAL -->
+  <div class="comp-modal-overlay" id="compModal">
+    <div class="comp-modal">
+      <button class="comp-modal-close" id="compModalClose">&times;</button>
+      <div class="comp-modal-icon" id="compModalIcon"></div>
+      <div class="comp-modal-title" id="compModalTitle"></div>
+      <div class="comp-modal-detail" id="compModalDetail"></div>
+      <div class="comp-modal-tags" id="compModalTags"></div>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <div class="section-label">05 — Образование и сертификация</div>
+    <h2 class="section-title">Образование<br>и сертификация</h2>
+
+    <div class="edu-block fade-in">
+      <div class="edu-degree">Бакалавриат, Информационные системы и технологии (09.03.02)</div>
+      <div class="edu-uni">Пензенский государственный университет архитектуры и строительства, кафедра ИВС</div>
+      <div class="edu-period">2022 — 2026, Пенза (совмещал с работой)</div>
+      <div class="edu-disciplines">Профильные дисциплины: Базы данных, Языки программирования, Клиент-серверные
+        информационные системы, Технологии программирования, Методы и средства проектирования информационных систем
+      </div>
+    </div>
+
+    <div class="cert-card fade-in">
+      Сертификат 1С: Профессионал по платформе 1С: Предприятие 8.3
+    </div>
+  </section>
+
+  <!-- ADDITIONAL -->
+  <section>
+    <div class="section-label">06 — Дополнительно</div>
+    <h2 class="section-title">Дополнительная<br>информация</h2>
+
+    <div class="additional-grid">
+      <div class="add-card fade-in">
+        <h3>🌐 Языки</h3>
+        <p>Русский (родной), Английский — чтение технической документации</p>
+      </div>
+      <div class="add-card fade-in">
+        <h3>🏗️ Инфраструктура</h3>
+        <p>Опыт работы с Docker; PostgreSQL — оптимизация запросов, аналитическая обработка данных.</p>
+      </div>
+      <div class="add-card fade-in">
+        <h3>🤖 Практики</h3>
+        <p>Применяю ИИ-инструменты для автоматизации рутинных задач, ведения базы знаний и получения второго мнения при
+          решении сложных технических задач.</p>
+      </div>
+      <div class="add-card fade-in">
+        <h3>📝 Документирование</h3>
+        <p>Пишу инструкции для пользователей, фиксирую архитектурные решения, поддерживаю проектную документацию в
+          актуальном состоянии.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-name">© 2026 Александр Жилинский</div>
+    <div class="footer-links">
+      <a href="tel:+79271512245">+7 927 151-22-45</a>
+      <a href="mailto:Azhilinsk@yandex.com">Azhilinsk@yandex.com</a>
+    </div>
+  </footer>
+
+  <script>
+    // ── Project detail data ──
+    const projectDetails = {
+      '01': {
+        title: 'Модуль «Менеджер паролей» с браузерной интеграцией',
+        desc: 'Разработал модуль в 1С, взаимодействующий с браузерным расширением через HTTP-сервисы. Реализовал централизованное хранение, шифрование и управление учётными данными пользователей. Интеграция позволила пользователям, которые не используют 1С, использовать все назначенные ему пароли в веб-интерфейсе.',
+        extra: `<ul>
+          <li>Проектирование REST API на базе HTTP-сервисов платформы 1С:Предприятие 8.3
+            <ul>
+              <li>Использование методов GET, POST, PUT, DELETE</li>
+              <li>Разноуровневая проверка: корректность запроса, валидность и активность токена, наличие обязательных параметров в методах</li>
+              <li>Логирование всех операций с указанием кода ответа, входящего запроса, структуры параметров, структуры ответа</li>
+            </ul>
+          </li>
+          <li>Реализация шифрования паролей на стороне сервера 1С с использованием штатных механизмов</li>
+          <li>Реализация хранения паролей в БезопасномХранилищеДанных</li>
+          <li>Построение системы ролевого доступа: разделение прав на просмотр, создание и редактирование записей</li>
+          <li>Обеспечение аудита действий пользователей: логирование фактов просмотра, копирования, редактирования, создания паролей</li>
+        </ul>`,
+        tags: ['1С:Предприятие 8.3', 'HTTP-сервисы', 'REST API', 'БезопасноеХранилищеДанных', 'Ролевая модель', 'Аудит']
+      },
+      '02': {
+        title: 'Автоматизация процесса инвентаризации',
+        desc: 'Разработал обработку, автоматизирующую полный цикл инвентаризации: формирование документа о проведении инвентаризации, сверка фактических остатков с учётными, фиксация расхождений. Сократил долю ручного труда и время на проведение типовой инвентаризации.',
+        extra: `<ul>
+          <li>Автоматическое формирование/заполнение документа «Пересчёт товаров» в зависимости от операции</li>
+          <li>Реализация алгоритма проверки учётного количества в разных документах одного периода и полного/пропорционального распределения фактического количества по этим документам</li>
+          <li>Занесение данных из файлов MS Excel / выбранного документа 1С</li>
+          <li>Сокращение времени проведения инвентаризации в ~3 раза по сравнению с ручным процессом</li>
+        </ul>`,
+        tags: ['1С:Предприятие 8.3', 'Управляемые формы', 'MS Excel', 'Пересчёт товаров', 'Автоматизация']
+      },
+      '03': {
+        title: 'Обмен данными между базами 1С',
+        desc: 'Реализовал и сопровождал механизм обмена данными между базами 1С на основе COM-соединения, КД2. Обеспечил синхронизацию справочников, документов, обработку конфликтов и контроль целостности данных.',
+        extra: `<ul>
+          <li>Проектирование интерфейса для обмена и реализация обмена при помощи COM-соединения
+            <ul>
+              <li>Интерфейс: ввод данных для подключения, отображение данных источника/приёмника</li>
+              <li>Обмен: реализация подключения, запрос данных источника, создание объектов в приёмнике с проверкой существования объектов, логирование операций обмена</li>
+            </ul>
+          </li>
+          <li>Разработка правил конвертации данных с помощью КД2 для синхронизации данных справочников, документов, регистров с последующей загрузкой/выгрузкой данных и проверкой целостности и корректности переноса</li>
+        </ul>`,
+        tags: ['COM-соединение', 'Конвертация данных 2', 'Синхронизация', 'Целостность данных', 'Логирование']
+      },
+      '04': {
+        title: 'Миграция Альфа-Авто 4 → Альфа-Авто 6',
+        desc: 'Перенёс функционал с обычных форм на управляемые в рамках перехода на новую редакцию конфигурации. Адаптировал бизнес-логику, перестроил интерфейсы и обеспечил корректную работу подсистем после миграции.',
+        extra: `<ul>
+          <li>Выполнение анализа и описание доработок в Альфа-Авто 4 (обычные формы)</li>
+          <li>Выполнение переноса и выделение клиент-серверного взаимодействия на управляемые формы с сохранением бизнес-логики</li>
+          <li>Адаптация интерфейсов под новую платформу: перестроение диалогов, командных панелей, элементов форм</li>
+          <li>Проведение тестирования всех выполняемых разработок/доработок с демонстрацией заказчику (в т.ч. совместное тестирование с ответом на вопросы)</li>
+        </ul>`,
+        tags: ['Альфа-Авто 4', 'Альфа-Авто 6', 'Управляемые формы', 'Обычные формы', 'Миграция', 'Тестирование']
+      },
+      '05': {
+        title: 'Доработка помощника обеспечения потребностей',
+        desc: 'Доработал типовой помощник обеспечения потребностей: внедрил группировку списка с сохранением штатного функционала, расширил набор фильтров и рабочих полей. Реализовал раздельный доступ к данным — при одновременной работе нескольких пользователей каждый видит только строки без ответственного либо закреплённые за ним. Обеспечил корректную работу типовых механизмов с учётом изменённой структуры данных.',
+        extra: `<ul>
+          <li>Внедрение группировки строк по номенклатуре и характеристике/заказам клиента с возможностью сворачивания/разворачивания групп</li>
+          <li>Расширение набора фильтров: по периоду потребности, статусу заказа, типу номенклатуры, ответственному лицу</li>
+          <li>Добавление пользовательских рабочих полей: наличие заказов поставщика (гиперссылка), выбранные поставщики, статусы обеспечения</li>
+          <li>Реализация фильтрации данных: каждый пользователь видит только незакреплённые строки либо строки, закреплённые за ним</li>
+          <li>Сохранение работы типовых механизмов помощника, совместимость при обновлениях конфигурации</li>
+        </ul>`,
+        tags: ['УТ 11.5', 'Управляемые формы', 'Группировка', 'Фильтрация', 'Ролевой доступ', 'Типовой функционал']
+      }
+    };
+
+    // ── Modal logic ──
+    const modal = document.getElementById('projectModal');
+    const modalClose = document.getElementById('modalClose');
+    const modalNum = document.getElementById('modalNum');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalExtra = document.getElementById('modalExtra');
+    const modalTags = document.getElementById('modalTags');
+
+    function openModal(projectNum) {
+      const data = projectDetails[projectNum];
+      if (!data) return;
+
+      modalNum.textContent = projectNum;
+      modalTitle.textContent = data.title;
+      modalDesc.innerHTML = `<p>${data.desc}</p>`;
+      modalExtra.innerHTML = `<h4>Ключевые задачи</h4>${data.extra}`;
+      modalTags.innerHTML = `<h4>Технологии</h4><div class="modal-tags">${data.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>`;
+
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+    });
+
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const num = card.querySelector('.project-num').textContent;
+        openModal(num);
+      });
+    });
+
+    // ── Competency detail data ──
+    const compDetails = [
+      {
+        icon: '⚙️',
+        title: 'Доработка типовых конфигураций',
+        detail: `<ul>
+          <li>УТ 11.5: доработка подсистем продаж, закупок, складского учёта, регламентных операций, интеграций</li>
+          <li>КА: доработка закрытия заказов по отборам, доработка подсистемы продаж</li>
+          <li>УНФ: доработка подсистемы продаж</li>
+          <li>Альфа-Авто 6: разработка различных АРМ, глубокие изменения в полном цикле заявки</li>
+          <li>Соблюдение правил поддержки типовых конфигураций при всех доработках</li>
+        </ul>`,
+        tags: ['УТ 11.5', 'КА', 'УНФ', 'Альфа-Авто 6', 'Типовые конфигурации']
+      },
+      {
+        icon: '🌐',
+        title: 'Проектирование и разработка HTTP-сервисов',
+        detail: `<ul>
+          <li>Проектирование REST API на базе HTTP-сервисов платформы 1С:Предприятие 8.3</li>
+          <li>Реализация endpoint'ов для CRUD-операций с авторизацией и валидацией данных</li>
+          <li>Документирование API с описанием параметров и списком ответов</li>
+          <li>Интеграция с внешними потребителями: браузерные расширения, внешние ресурсы</li>
+        </ul>`,
+        tags: ['HTTP-сервисы', 'REST API', '1С:Предприятие 8.3', 'Документирование', 'Интеграция']
+      },
+      {
+        icon: '🔗',
+        title: 'Построение обменов данными',
+        detail: `<ul>
+          <li>Настройка COM-соединений для прямого взаимодействия между базами 1С</li>
+          <li>Разработка правил обмена XML (Конвертация данных 2) для синхронизации справочников и документов</li>
+          <li>Реализация механизмов выгрузки/загрузки данных (MS Excel, JSON и др. форматы)</li>
+        </ul>`,
+        tags: ['COM-соединение', 'Конвертация данных 2', 'XML', 'MS Excel', 'JSON', 'Обмен данными']
+      },
+      {
+        icon: '🔀',
+        title: 'Интеграция 1С с внешними системами',
+        detail: `<ul>
+          <li>Двусторонний обмен с Bitrix24: синхронизация заказов, контрагентов, товарного каталога</li>
+          <li>Интеграция с интернет-магазинами: автоматическая выгрузка контента и получение заказов</li>
+          <li>Взаимодействие через REST API внешних сервисов с обработкой ответов и ошибок</li>
+          <li>Формализация карт сопоставления полей</li>
+        </ul>`,
+        tags: ['Bitrix24', 'Интернет-магазины', 'REST API', 'Карты сопоставления', 'Интеграция']
+      },
+      {
+        icon: '⚡',
+        title: 'Оптимизация запросов и производительности',
+        detail: `<ul>
+          <li>Рефакторинг запросов с заменой вложенных циклов на пакетные операции и временные таблицы</li>
+          <li>Рефакторинг запросов с заменой неявных соединений, неоптимальных условий, вызовов в цикле</li>
+          <li>Устранение узких мест в серверном коде: рефакторинг тяжёлых обработок и фоновых заданий</li>
+        </ul>`,
+        tags: ['Запросы SQL', 'Временные таблицы', 'Пакетные операции', 'Рефакторинг', 'Производительность']
+      },
+      {
+        icon: '📐',
+        title: 'Бизнес-процессы и моделирование',
+        detail: `<ul>
+          <li>Разработка маршрутов бизнес-процессов в 1С: согласование, утверждение, уведомление</li>
+          <li>Моделирование бизнес-процессов в нотации BPMN 2.0</li>
+          <li>Построение ER-диаграмм для визуализации структуры метаданных и их взаимосвязей</li>
+          <li>Автоматизация старта и завершения БП по событиям системы: проведение документа, изменение статуса</li>
+        </ul>`,
+        tags: ['Бизнес-процессы 1С', 'BPMN 2.0', 'ER-диаграммы', 'Автоматизация']
+      },
+      {
+        icon: '🖥️',
+        title: 'Управляемые формы и клиент-сервер',
+        detail: `<ul>
+          <li>Разработка управляемых форм с динамическими списками, таблицами значений, деревьями значений</li>
+          <li>Разделение логики на клиентскую (интерактив) и серверную (вычисления, доступ к БД)</li>
+          <li>Оптимизация клиент-серверных вызовов: минимизация числа обращений, асинхронные операции</li>
+          <li>Адаптация интерфейса под роли: динамическое скрытие/отображение полей и команд</li>
+        </ul>`,
+        tags: ['Управляемые формы', 'Клиент-сервер', 'Динамические списки', 'Асинхронность', 'Ролевая модель']
+      },
+      {
+        icon: '🔄',
+        title: 'Миграция с обычных форм на управляемые',
+        detail: `<ul>
+          <li>Выявление всего модифицированного функционала типовой конфигурации</li>
+          <li>Перенос логики с сохранением поведения: события, команды, обработчики, условное оформление</li>
+          <li>Перестройка интерфейсов: замена табличных полей на динамические списки, диалогов на формы</li>
+          <li>Тестирование мигрированного функционала на соответствие эталонному поведению</li>
+        </ul>`,
+        tags: ['Обычные формы', 'Управляемые формы', 'Миграция', 'Тестирование']
+      },
+      {
+        icon: '📚',
+        title: 'БСП и стандарты разработки 1С',
+        detail: `<ul>
+          <li>Использование подсистем БСП</li>
+          <li>Соблюдение стандартов именования объектов метаданных, реквизитов и процедур</li>
+          <li>Оформление кода по требованиям 1С: структура модулей, комментарии, обработка исключений</li>
+        </ul>`,
+        tags: ['БСП', 'Стандарты 1С', 'Именование', 'Оформление кода']
+      },
+      {
+        icon: '👥',
+        title: 'Наставничество и командная работа',
+        detail: `<ul>
+          <li>Проведение code review: проверка логики, читаемости кода и соответствия стандартам разработки</li>
+          <li>Обучение junior-разработчиков: постановка задач, разбор сложных моментов, обратная связь</li>
+          <li>Оценка трудоёмкости задач: декомпозиция требований, учёт рисков, планирование итераций</li>
+          <li>Ведение технической документации по архитектуре принятых решений и проектным наработкам</li>
+          <li>Организация передачи знаний внутри команды через базу знаний и внутренние митапы</li>
+        </ul>`,
+        tags: ['Code Review', 'Наставничество', 'Оценка задач', 'Документирование', 'Команда']
+      },
+      {
+        icon: '🔍',
+        title: 'Анализ роста БД и устранение узких мест',
+        detail: `<ul>
+          <li>Мониторинг динамики роста таблиц БД через SQL-аналитику</li>
+          <li>Диагностика причин роста через анализ типовых и нетиповых регламентных заданий</li>
+          <li>Разработка сервисных обработок для очистки устаревших данных по настраиваемым правилам</li>
+        </ul>`,
+        tags: ['PostgreSQL', 'SQL-аналитика', 'Регламентные задания', 'Очистка данных']
+      },
+      {
+        icon: '💬',
+        title: 'Работа без аналитика',
+        detail: `<ul>
+          <li>Самостоятельный сбор и формализация требований напрямую от бизнес-заказчика</li>
+          <li>Перевод бизнес-потребностей на язык технических спецификаций и постановка задач</li>
+          <li>Прототипирование решений для визуального согласования с заказчиком до начала разработки</li>
+          <li>Документирование функциональных требований: описание сценариев, граничных условий, ожидаемого результата</li>
+          <li>Управление ожиданиями заказчика: прозрачная оценка сроков, промежуточные демонстрации, приёмка</li>
+        </ul>`,
+        tags: ['Сбор требований', 'Спецификации', 'Прототипирование', 'Коммуникация', 'Приёмка']
+      }
+    ];
+
+    // ── Competency modal logic ──
+    const compModal = document.getElementById('compModal');
+    const compModalClose = document.getElementById('compModalClose');
+    const compModalIcon = document.getElementById('compModalIcon');
+    const compModalTitle = document.getElementById('compModalTitle');
+    const compModalDetail = document.getElementById('compModalDetail');
+    const compModalTags = document.getElementById('compModalTags');
+
+    function openCompModal(index) {
+      const data = compDetails[index];
+      if (!data) return;
+
+      compModalIcon.textContent = data.icon;
+      compModalTitle.textContent = data.title;
+      compModalDetail.innerHTML = data.detail;
+      compModalTags.innerHTML = data.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+      compModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCompModal() {
+      compModal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    compModalClose.addEventListener('click', closeCompModal);
+
+    compModal.addEventListener('click', (e) => {
+      if (e.target === compModal) closeCompModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && compModal.classList.contains('active')) closeCompModal();
+    });
+
+    document.querySelectorAll('.comp-card').forEach((card, i) => {
+      card.addEventListener('click', () => openCompModal(i));
+    });
+
+    // Intersection Observer for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Stagger children in grids
+    document.querySelectorAll('.comp-grid, .projects-grid, .tech-categories, .additional-grid').forEach(grid => {
+      grid.querySelectorAll('.fade-in').forEach((el, i) => {
+        el.style.transitionDelay = `${i * 60}ms`;
+      });
+    });
+  </script>
+
+</body>
+
+</html>
